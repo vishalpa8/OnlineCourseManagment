@@ -1,13 +1,13 @@
-package com.owner.ridehailing.RideHailing;
+package com.course.onlinecoursemanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RideHailingApplication {
+public class CourseManagementApp {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RideHailingApplication.class, args);
+		SpringApplication.run(CourseManagementApp.class, args);
 	}
 
 }

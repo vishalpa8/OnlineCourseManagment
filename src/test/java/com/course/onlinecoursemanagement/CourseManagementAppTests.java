@@ -1,10 +1,10 @@
-package com.owner.ridehailing.RideHailing;
+package com.course.onlinecoursemanagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RideHailingApplicationTests {
+class CourseManagementAppTests {
 
 	@Test
 	void contextLoads() {
