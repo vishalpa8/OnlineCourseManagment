@@ -2,6 +2,7 @@ package com.course.onlinecoursemanagement.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,11 +27,11 @@ public class Course {
     @NotBlank(message = "Description is required")
     private String description;
 
-    @NotBlank(message = "Price is required")
+    @NotNull(message = "Price is required")
     @Positive(message = "Price must be greater than 0")
     private Double price;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "student_courses", joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> students;
@@ -39,6 +40,6 @@ public class Course {
     @JoinColumn(name = "instructor_id")
     private User instructor;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<Enrollment> enrollments = new HashSet<>();
 }

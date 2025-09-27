@@ -1,17 +1,53 @@
 package com.course.onlinecoursemanagement.service;
 
 
+import com.course.onlinecoursemanagement.exception.ResourceNotFoundException;
 import com.course.onlinecoursemanagement.model.Course;
 import com.course.onlinecoursemanagement.model.User;
+import com.course.onlinecoursemanagement.repository.CourseRepository;
+import com.course.onlinecoursemanagement.repository.UserRepository;
 import com.course.onlinecoursemanagement.response.CourseResponseDTO;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class CourseServiceImp implements CourseService {
+    private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+
     @Override
     public CourseResponseDTO getAddCourse(Course course, User instructor) {
-        return null;
+        course.setInstructor(instructor);
+        instructor.getCoursesTaught().add(course);
+        userRepository.save(instructor);
+        return modelMapper.map(course, CourseResponseDTO.class);
     }
+
+    @Override
+    public List<CourseResponseDTO> getAllCourses() {
+        List<Course> course = courseRepository.findAll();
+        return course.stream().map(val -> modelMapper.map(val, CourseResponseDTO.class)).toList();
+    }
+
+    @Override
+    public CourseResponseDTO getCourseById(Long id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Please enter valid id " + id));
+        return modelMapper.map(course, CourseResponseDTO.class);
+    }
+
+    @Override
+    public CourseResponseDTO deleteCourseById(Long id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Please enter valid id " + id));
+        CourseResponseDTO courseResponseDTO = modelMapper.map(course, CourseResponseDTO.class);
+        courseRepository.delete(course);
+        return courseResponseDTO;
+    }
+
 }

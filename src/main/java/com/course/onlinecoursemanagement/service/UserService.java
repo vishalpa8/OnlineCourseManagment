@@ -16,7 +16,7 @@ public interface UserService {
 
     Optional<User> getUserById(Long id);
 
-    List<User> getAllUsers();
+    List<UserResponseDTO> getAllUsers();
 
     UserResponseDTO getUpdateDetails(UpdateRequest updateRequest, Long id);
 

@@ -15,5 +15,5 @@ public class CourseResponseDTO {
     private String description;
     private Double price;
     private Set<User> students;
-    private User instructor;
+    private UserResponseDTO instructor;
 }

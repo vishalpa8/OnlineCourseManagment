@@ -40,13 +40,13 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany(mappedBy = "students", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Course> courses;
 
-    @OneToMany(mappedBy = "instructor", orphanRemoval = true)
+    @OneToMany(mappedBy = "instructor", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Course> coursesTaught;
 
-    @OneToMany(mappedBy = "student", orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<Enrollment> enrollments;
 
     public User(String name, String username, String email) {

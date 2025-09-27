@@ -3,6 +3,7 @@ package com.course.onlinecoursemanagement.controller;
 import com.course.onlinecoursemanagement.exception.ApiException;
 import com.course.onlinecoursemanagement.exception.ResourceNotFoundException;
 import com.course.onlinecoursemanagement.model.Course;
+import com.course.onlinecoursemanagement.model.Role;
 import com.course.onlinecoursemanagement.model.RoleType;
 import com.course.onlinecoursemanagement.model.User;
 import com.course.onlinecoursemanagement.repository.UserRepository;
@@ -12,6 +13,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -30,7 +34,8 @@ public class CourseController {
         User instructor = userRepository.findById(id).orElseThrow
                 (() -> new ResourceNotFoundException("Please enter valid id"));
 
-        boolean isInstructor = instructor.getRoles().stream().anyMatch(val -> val.getRoleType().equals(RoleType.INSTRUCTOR));
+        boolean isInstructor = instructor.getRoles().stream().map(Role::getRoleType).
+                anyMatch(role -> Set.of(RoleType.ADMIN, RoleType.INSTRUCTOR).contains(role));
 
         if (!isInstructor) {
             throw new ApiException("You are not authorized to create course");
@@ -38,5 +43,23 @@ public class CourseController {
 
         CourseResponseDTO courseResponseDTO = courseService.getAddCourse(course, instructor);
         return new ResponseEntity<>(courseResponseDTO, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/courses/all")
+    public ResponseEntity<?> getAllCourses() {
+        List<CourseResponseDTO> courseResponseDTO = courseService.getAllCourses();
+        return new ResponseEntity<>(courseResponseDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/courses/{id}")
+    public ResponseEntity<?> getCourseById(@PathVariable Long id) {
+        CourseResponseDTO courseResponseDTO = courseService.getCourseById(id);
+        return new ResponseEntity<>(courseResponseDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/courses/delete/{id}")
+    public ResponseEntity<?> deleteCourseById(@PathVariable Long id) {
+        CourseResponseDTO courseResponseDTO = courseService.deleteCourseById(id);
+        return new ResponseEntity<>(courseResponseDTO, HttpStatus.OK);
     }
 }
