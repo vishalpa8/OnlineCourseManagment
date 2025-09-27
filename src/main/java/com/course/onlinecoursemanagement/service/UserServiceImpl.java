@@ -1,5 +1,7 @@
 package com.course.onlinecoursemanagement.service;
 
+import com.course.onlinecoursemanagement.exception.ApiException;
+import com.course.onlinecoursemanagement.exception.ResourceNotFoundException;
 import com.course.onlinecoursemanagement.model.Role;
 import com.course.onlinecoursemanagement.model.RoleType;
 import com.course.onlinecoursemanagement.model.User;
@@ -38,25 +40,23 @@ public class UserServiceImpl implements UserService {
 
         if (strRoles == null) {
             Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
-                    .orElseThrow(() -> new RuntimeException("Error: User Role not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Error: User Role not found"));
             roles.add(user_role);
         } else {
             strRoles.forEach(role -> {
                         switch (role.toLowerCase()) {
                             case "admin":
                                 Role admin_role = roleRepository.findByRoleType(RoleType.ADMIN)
-                                        .orElseThrow(() -> new RuntimeException("Error: Admin Role not found"));
+                                        .orElseThrow(() -> new ResourceNotFoundException("Error: Admin Role not found"));
                                 roles.add(admin_role);
                                 break;
                             case "instructor":
                                 Role instruct_role = roleRepository.findByRoleType(RoleType.INSTRUCTOR)
-                                        .orElseThrow(() -> new RuntimeException("Error: Instructor Role not found"));
+                                        .orElseThrow(() -> new ResourceNotFoundException("Error: Instructor Role not found"));
                                 roles.add(instruct_role);
                                 break;
-                            case "student":
-                                Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
-                                        .orElseThrow(() -> new RuntimeException("Error: User Role not found"));
-                                roles.add(user_role);
+                            default:
+                                throw new ResourceNotFoundException(role, "roleType", "roles");
                         }
                     }
             );
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUpdateDetails(UpdateRequest updateRequest, Long id) {
-        User userInfo = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Please enter valid id!"));
+        User userInfo = userRepository.findById(id).orElseThrow(() -> new ApiException("Please enter valid id!"));
 
         if (hasValue(updateRequest.getEmail()) && !updateRequest.getEmail().equals(userInfo.getEmail())) {
             userInfo.setEmail(updateRequest.getEmail());
@@ -113,6 +113,13 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(userInfo);
+        return modelMapper.map(userInfo, UserResponseDTO.class);
+    }
+
+    @Override
+    public UserResponseDTO getDeleteDetails(Long id) {
+        User userInfo = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id is not valid: " + id));
+        userRepository.delete(userInfo);
         return modelMapper.map(userInfo, UserResponseDTO.class);
     }
 

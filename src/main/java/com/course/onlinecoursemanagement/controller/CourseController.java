@@ -1,5 +1,7 @@
 package com.course.onlinecoursemanagement.controller;
 
+import com.course.onlinecoursemanagement.exception.ApiException;
+import com.course.onlinecoursemanagement.exception.ResourceNotFoundException;
 import com.course.onlinecoursemanagement.model.Course;
 import com.course.onlinecoursemanagement.model.RoleType;
 import com.course.onlinecoursemanagement.model.User;
@@ -26,12 +28,12 @@ public class CourseController {
     @PostMapping("/courses/{id}")
     public ResponseEntity<?> createCourses(@Valid @RequestBody Course course, @PathVariable Long id) {
         User instructor = userRepository.findById(id).orElseThrow
-                (() -> new RuntimeException("Please enter valid id"));
+                (() -> new ResourceNotFoundException("Please enter valid id"));
 
         boolean isInstructor = instructor.getRoles().stream().anyMatch(val -> val.getRoleType().equals(RoleType.INSTRUCTOR));
 
         if (!isInstructor) {
-            throw new RuntimeException("You are not authorized to create course");
+            throw new ApiException("You are not authorized to create course");
         }
 
         CourseResponseDTO courseResponseDTO = courseService.getAddCourse(course, instructor);

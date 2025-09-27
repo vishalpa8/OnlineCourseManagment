@@ -1,13 +1,15 @@
 package com.course.onlinecoursemanagement.exception;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse {
+public class ApiException extends RuntimeException {
     private String message;
     private int Status;
+
+    public ApiException(String message) {
+        super(message);
+    }
 }

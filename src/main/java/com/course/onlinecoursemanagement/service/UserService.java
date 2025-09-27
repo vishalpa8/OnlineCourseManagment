@@ -19,5 +19,7 @@ public interface UserService {
     List<User> getAllUsers();
 
     UserResponseDTO getUpdateDetails(UpdateRequest updateRequest, Long id);
+
+    UserResponseDTO getDeleteDetails(Long id);
 }
 

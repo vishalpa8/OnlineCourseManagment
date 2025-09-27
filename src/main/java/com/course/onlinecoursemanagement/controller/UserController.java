@@ -1,5 +1,6 @@
 package com.course.onlinecoursemanagement.controller;
 
+import com.course.onlinecoursemanagement.exception.ApiException;
 import com.course.onlinecoursemanagement.model.Role;
 import com.course.onlinecoursemanagement.model.RoleType;
 import com.course.onlinecoursemanagement.model.User;
@@ -31,11 +32,11 @@ public class UserController {
     @PostMapping("/users/register")
     public ResponseEntity<UserResponseDTO> registerEndPoint(@Valid @RequestBody SignupRequest request) {
         if (userRepository.existsByUsername((request.getUsername()))) {
-            throw new RuntimeException("Error: username is already registered!");
+            throw new ApiException("Error: username is already registered!");
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Error: email is already registered!");
+            throw new ApiException("Error: email is already registered!");
         }
         UserResponseDTO userResponseDTO = userService.getRegisterUser(request);
         return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
@@ -94,6 +95,12 @@ public class UserController {
     @PutMapping("/users/update/{id}")
     public ResponseEntity<?> updateUserData(@RequestBody UpdateRequest updateRequest, @PathVariable Long id) {
         UserResponseDTO userInfo = userService.getUpdateDetails(updateRequest, id);
+        return new ResponseEntity<>(userInfo, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/users/delete/{id}")
+    public ResponseEntity<?> deleteUserData(@PathVariable Long id) {
+        UserResponseDTO userInfo = userService.getDeleteDetails(id);
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
