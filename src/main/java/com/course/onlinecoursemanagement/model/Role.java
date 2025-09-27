@@ -1,4 +1,4 @@
-package com.course.onlinecoursemanagement.Model;
+package com.course.onlinecoursemanagement.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,4 +18,9 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
+
+    public Role(RoleType roleName) {
+        this.roleType = roleName;
+    }
+
 }

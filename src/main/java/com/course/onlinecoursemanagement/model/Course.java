@@ -1,4 +1,4 @@
-package com.course.onlinecoursemanagement.Model;
+package com.course.onlinecoursemanagement.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
