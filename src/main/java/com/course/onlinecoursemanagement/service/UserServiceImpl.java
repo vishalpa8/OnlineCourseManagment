@@ -7,6 +7,7 @@ import com.course.onlinecoursemanagement.repository.RoleRepository;
 import com.course.onlinecoursemanagement.repository.UserRepository;
 import com.course.onlinecoursemanagement.request.LoginRequest;
 import com.course.onlinecoursemanagement.request.SignupRequest;
+import com.course.onlinecoursemanagement.request.UpdateRequest;
 import com.course.onlinecoursemanagement.response.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -79,6 +81,44 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public UserResponseDTO getUpdateDetails(UpdateRequest updateRequest, Long id) {
+        User userInfo = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Please enter valid id!"));
+
+        if (hasValue(updateRequest.getEmail()) && !updateRequest.getEmail().equals(userInfo.getEmail())) {
+            userInfo.setEmail(updateRequest.getEmail());
+        }
+
+        if (hasValue(updateRequest.getName()) && !updateRequest.getName().equals(userInfo.getName())) {
+            userInfo.setName(updateRequest.getName());
+        }
+
+        if (hasValue(updateRequest.getUsername()) && !updateRequest.getUsername().equals(userInfo.getUsername())) {
+            userInfo.setUsername(updateRequest.getUsername());
+        }
+
+        if (updateRequest.getRoles() != null && !updateRequest.getRoles().isEmpty()) {
+            Set<Role> updatedRoles = updateRequest.getRoles().stream().
+                    map(val -> roleRepository.findByRoleType(RoleType.valueOf(val.toUpperCase())).orElseThrow(
+                            () -> new RuntimeException("Role not found: " + val)
+                    )).collect(Collectors.toSet());
+
+            if (!updatedRoles.isEmpty()) {
+                Set<Role> mergedRoles = new HashSet<>(userInfo.getRoles());
+                mergedRoles.addAll(updatedRoles);
+                userInfo.setRoles(mergedRoles);
+            }
+        }
+
+        userRepository.save(userInfo);
+        return modelMapper.map(userInfo, UserResponseDTO.class);
+    }
+
+
+    private boolean hasValue(String str) {
+        return str != null && !str.isBlank();
     }
 
 

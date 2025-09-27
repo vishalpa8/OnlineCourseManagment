@@ -1,9 +1,7 @@
 package com.course.onlinecoursemanagement.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,15 +26,11 @@ public class Course {
     @NotBlank(message = "Description is required")
     private String description;
 
-    @NotNull(message = "Capacity is required")
-    @Min(value = 1, message = "Capacity must be at least 1")
-    private Integer capacity;
-
     @NotBlank(message = "Price is required")
     @Positive(message = "Price must be greater than 0")
     private Double price;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "student_courses", joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> students;

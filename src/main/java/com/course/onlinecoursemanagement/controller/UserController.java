@@ -6,6 +6,7 @@ import com.course.onlinecoursemanagement.model.User;
 import com.course.onlinecoursemanagement.repository.UserRepository;
 import com.course.onlinecoursemanagement.request.LoginRequest;
 import com.course.onlinecoursemanagement.request.SignupRequest;
+import com.course.onlinecoursemanagement.request.UpdateRequest;
 import com.course.onlinecoursemanagement.response.UserResponseDTO;
 import com.course.onlinecoursemanagement.service.UserService;
 import jakarta.validation.Valid;
@@ -46,7 +47,13 @@ public class UserController {
 
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Sorry bro, you are not registered. Please register first!"));
+                    .body(Map.of("message", "Sorry bro, you are not authorized. Please register first!"));
+        }
+
+        if (!user.get().getUsername().equals(loginRequest.getUsername())
+                || !user.get().getEmail().equals(loginRequest.getEmail())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Sorry bro, you are not authorized. Please register first!"));
         }
 
         Set<RoleType> user_roles = user.get().getRoles().stream()
@@ -82,6 +89,12 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
         List<User> userList = userService.getAllUsers();
         return new ResponseEntity<>(userList, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/update/{id}")
+    public ResponseEntity<?> updateUserData(@RequestBody UpdateRequest updateRequest, @PathVariable Long id) {
+        UserResponseDTO userInfo = userService.getUpdateDetails(updateRequest, id);
+        return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
     @GetMapping("/health")

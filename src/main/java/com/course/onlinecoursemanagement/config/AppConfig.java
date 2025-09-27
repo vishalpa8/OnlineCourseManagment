@@ -3,11 +3,15 @@ package com.course.onlinecoursemanagement.config;
 
 import com.course.onlinecoursemanagement.model.Role;
 import com.course.onlinecoursemanagement.model.RoleType;
+import com.course.onlinecoursemanagement.model.User;
 import com.course.onlinecoursemanagement.repository.RoleRepository;
+import com.course.onlinecoursemanagement.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Set;
 
 @Configuration
 public class AppConfig {
@@ -18,24 +22,59 @@ public class AppConfig {
     }
 
     @Bean
-    public CommandLineRunner initRoles(RoleRepository roleRepository) {
+    public CommandLineRunner initRoles(RoleRepository roleRepository, UserRepository userRepository) {
         return args -> {
-            roleRepository.findByRoleType(RoleType.ADMIN).orElseGet(() -> {
+            Role admin = roleRepository.findByRoleType(RoleType.ADMIN).orElseGet(() -> {
                 Role admin_role = new Role(RoleType.ADMIN);
                 roleRepository.save(admin_role);
                 return admin_role;
             });
-            roleRepository.findByRoleType(RoleType.STUDENT).orElseGet(() -> {
+            Role user = roleRepository.findByRoleType(RoleType.STUDENT).orElseGet(() -> {
                 Role user_role = new Role(RoleType.STUDENT);
                 roleRepository.save(user_role);
                 return user_role;
             });
 
-            roleRepository.findByRoleType(RoleType.INSTRUCTOR).orElseGet(() -> {
+            Role instructor = roleRepository.findByRoleType(RoleType.INSTRUCTOR).orElseGet(() -> {
                 Role instructor_role = new Role(RoleType.INSTRUCTOR);
                 roleRepository.save(instructor_role);
                 return instructor_role;
             });
+
+            Set<Role> userRoles = Set.of(user);
+            Set<Role> instructorRoles = Set.of(user, instructor);
+            Set<Role> adminRoles = Set.of(user, instructor, admin);
+
+            if (!userRepository.existsByUsername("user1")) {
+                User user1 = new User("user1", "user1", "user1@gmail.com");
+                userRepository.save(user1);
+            }
+
+            if (!userRepository.existsByUsername("teacher1")) {
+                User teacher = new User("teacher1", "teacher1", "teacher12@gmail.com");
+                userRepository.save(teacher);
+            }
+
+            if (!userRepository.existsByUsername("admin")) {
+                User admin_1 = new User("admin", "admin", "admin12@gmail.com");
+                userRepository.save(admin_1);
+            }
+
+            userRepository.findByUsername("user1").ifPresent(a -> {
+                a.setRoles(userRoles);
+                userRepository.save(a);
+            });
+
+            userRepository.findByUsername("teacher1").ifPresent(a -> {
+                a.setRoles(instructorRoles);
+                userRepository.save(a);
+            });
+
+            userRepository.findByUsername("admin").ifPresent(a -> {
+                a.setRoles(adminRoles);
+                userRepository.save(a);
+            });
+
         };
     }
 }

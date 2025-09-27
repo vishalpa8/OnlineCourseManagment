@@ -13,7 +13,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users",uniqueConstraints = {
+@Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames = "username")})
 public class User {
     @Id
@@ -32,9 +32,9 @@ public class User {
     private String email;
 
 
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id"))
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Role> roles = new HashSet<>();
@@ -43,10 +43,15 @@ public class User {
     @ManyToMany(mappedBy = "students")
     private List<Course> courses;
 
-    @OneToMany(mappedBy = "instructor",orphanRemoval = true)
+    @OneToMany(mappedBy = "instructor", orphanRemoval = true)
     private List<Course> coursesTaught;
 
-    @OneToMany(mappedBy = "student",orphanRemoval = true)
-    private Set<Enrollment> enrollments ;
+    @OneToMany(mappedBy = "student", orphanRemoval = true)
+    private Set<Enrollment> enrollments;
 
+    public User(String name, String username, String email) {
+        this.name = name;
+        this.username = username;
+        this.email = email;
+    }
 }
