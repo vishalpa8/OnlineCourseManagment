@@ -5,6 +5,7 @@ import com.course.onlinecoursemanagement.model.RoleType;
 import com.course.onlinecoursemanagement.model.User;
 import com.course.onlinecoursemanagement.repository.RoleRepository;
 import com.course.onlinecoursemanagement.repository.UserRepository;
+import com.course.onlinecoursemanagement.request.LoginRequest;
 import com.course.onlinecoursemanagement.request.SignupRequest;
 import com.course.onlinecoursemanagement.response.UserResponseDTO;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -29,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
         userInfo.setEmail(signupRequest.getEmail());
         userInfo.setName(signupRequest.getName());
+        userInfo.setUsername(signupRequest.getUsername());
 
         if (strRoles == null) {
             Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
@@ -47,7 +51,7 @@ public class UserServiceImpl implements UserService {
                                         .orElseThrow(() -> new RuntimeException("Error: Instructor Role not found"));
                                 roles.add(instruct_role);
                                 break;
-                            default:
+                            case "student":
                                 Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
                                         .orElseThrow(() -> new RuntimeException("Error: User Role not found"));
                                 roles.add(user_role);
@@ -60,4 +64,22 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userInfo);
         return modelMapper.map(userInfo, UserResponseDTO.class);
     }
+
+    @Override
+    public Optional<User> getUserLogin(LoginRequest loginRequest) {
+        return userRepository.findByEmail(loginRequest.getEmail())
+                .or(() -> userRepository.findByUsername(loginRequest.getUsername()));
+    }
+
+    @Override
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+
 }

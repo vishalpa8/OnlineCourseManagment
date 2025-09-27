@@ -19,5 +19,8 @@ public class SignupRequest {
     @NotBlank(message = "Email field required!")
     private String email;
 
+    @NotBlank(message = "username is required")
+    private String username;
+
     private Set<String> roles;
 }

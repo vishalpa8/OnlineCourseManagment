@@ -13,12 +13,12 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public ModelMapper modelMapper(){
+    public ModelMapper modelMapper() {
         return new ModelMapper();
     }
 
     @Bean
-    public CommandLineRunner initRoles(RoleRepository roleRepository){
+    public CommandLineRunner initRoles(RoleRepository roleRepository) {
         return args -> {
             roleRepository.findByRoleType(RoleType.ADMIN).orElseGet(() -> {
                 Role admin_role = new Role(RoleType.ADMIN);

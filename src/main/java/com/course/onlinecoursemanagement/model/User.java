@@ -13,8 +13,8 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users",uniqueConstraints = @UniqueConstraint(
-        columnNames = "email"))
+@Table(name = "users",uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames = "username")})
 public class User {
     @Id
     @Column(name = "user_id")
@@ -23,6 +23,9 @@ public class User {
 
     @NotBlank(message = "Student name is required")
     private String name;
+
+    @NotBlank(message = "Username is required")
+    private String username;
 
     @Email
     @NotBlank(message = "Email id is required")
