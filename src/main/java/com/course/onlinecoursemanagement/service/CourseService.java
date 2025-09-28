@@ -15,4 +15,6 @@ public interface CourseService {
     CourseResponseDTO getCourseById(Long id);
 
     CourseResponseDTO deleteCourseById(Long id);
+
+    CourseResponseDTO updateCourseDetails(CourseResponseDTO updateCourseRequest, Long id);
 }

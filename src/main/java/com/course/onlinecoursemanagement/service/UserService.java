@@ -3,14 +3,14 @@ package com.course.onlinecoursemanagement.service;
 import com.course.onlinecoursemanagement.model.User;
 import com.course.onlinecoursemanagement.request.LoginRequest;
 import com.course.onlinecoursemanagement.request.SignupRequest;
-import com.course.onlinecoursemanagement.request.UpdateRequest;
+import com.course.onlinecoursemanagement.request.UpdateUserRequest;
 import com.course.onlinecoursemanagement.response.UserResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    UserResponseDTO getRegisterUser(SignupRequest signupRequest);
+    UserResponseDTO createUser(SignupRequest signupRequest);
 
     Optional<User> getUserLogin(LoginRequest loginRequest);
 
@@ -18,8 +18,8 @@ public interface UserService {
 
     List<UserResponseDTO> getAllUsers();
 
-    UserResponseDTO getUpdateDetails(UpdateRequest updateRequest, Long id);
+    UserResponseDTO updateUserDetailsById(UpdateUserRequest updateRequest, Long id);
 
-    UserResponseDTO getDeleteDetails(Long id);
+    UserResponseDTO deleteUserById(Long id);
 }
 

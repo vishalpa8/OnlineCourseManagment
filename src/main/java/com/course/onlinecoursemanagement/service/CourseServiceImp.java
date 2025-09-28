@@ -7,11 +7,14 @@ import com.course.onlinecoursemanagement.model.User;
 import com.course.onlinecoursemanagement.repository.CourseRepository;
 import com.course.onlinecoursemanagement.repository.UserRepository;
 import com.course.onlinecoursemanagement.response.CourseResponseDTO;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.course.onlinecoursemanagement.config.Utilities.hasValue;
 
 @Service
 @AllArgsConstructor
@@ -50,4 +53,32 @@ public class CourseServiceImp implements CourseService {
         return courseResponseDTO;
     }
 
+    @Override
+    @Transactional
+    public CourseResponseDTO updateCourseDetails(CourseResponseDTO updateCourseRequest, Long id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Please enter valid id " + id));
+
+        String description = updateCourseRequest.getDescription();
+        String title = updateCourseRequest.getTitle();
+        Double price = updateCourseRequest.getPrice();
+        boolean update = false;
+
+        if (hasValue(description) && !description.equals(course.getDescription())) {
+            course.setDescription(description);
+            update = true;
+        }
+
+        if (hasValue(title) && !title.equals(course.getTitle())) {
+            course.setTitle(title);
+            update = true;
+        }
+
+        if (price != null && !price.equals(course.getPrice())) {
+            course.setPrice(price);
+            update = true;
+        }
+        if (update) courseRepository.save(course);
+        return modelMapper.map(course, CourseResponseDTO.class);
+    }
 }

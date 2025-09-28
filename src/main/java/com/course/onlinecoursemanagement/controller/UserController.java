@@ -7,7 +7,7 @@ import com.course.onlinecoursemanagement.model.User;
 import com.course.onlinecoursemanagement.repository.UserRepository;
 import com.course.onlinecoursemanagement.request.LoginRequest;
 import com.course.onlinecoursemanagement.request.SignupRequest;
-import com.course.onlinecoursemanagement.request.UpdateRequest;
+import com.course.onlinecoursemanagement.request.UpdateUserRequest;
 import com.course.onlinecoursemanagement.response.UserResponseDTO;
 import com.course.onlinecoursemanagement.service.UserService;
 import jakarta.validation.Valid;
@@ -38,7 +38,7 @@ public class UserController {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ApiException("Error: email is already registered!");
         }
-        UserResponseDTO userResponseDTO = userService.getRegisterUser(request);
+        UserResponseDTO userResponseDTO = userService.createUser(request);
         return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
     }
 
@@ -93,14 +93,14 @@ public class UserController {
     }
 
     @PutMapping("/users/update/{id}")
-    public ResponseEntity<?> updateUserData(@RequestBody UpdateRequest updateRequest, @PathVariable Long id) {
-        UserResponseDTO userInfo = userService.getUpdateDetails(updateRequest, id);
+    public ResponseEntity<?> updateUserData(@RequestBody UpdateUserRequest updateRequest, @PathVariable Long id) {
+        UserResponseDTO userInfo = userService.updateUserDetailsById(updateRequest, id);
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
     @DeleteMapping("/users/delete/{id}")
     public ResponseEntity<?> deleteUserData(@PathVariable Long id) {
-        UserResponseDTO userInfo = userService.getDeleteDetails(id);
+        UserResponseDTO userInfo = userService.deleteUserById(id);
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 

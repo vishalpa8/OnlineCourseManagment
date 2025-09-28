@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CourseResponseDTO {
+    private String course_id;
     private String title;
     private String description;
     private Double price;

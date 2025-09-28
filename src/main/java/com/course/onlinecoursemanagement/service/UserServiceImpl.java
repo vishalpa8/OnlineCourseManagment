@@ -9,8 +9,9 @@ import com.course.onlinecoursemanagement.repository.RoleRepository;
 import com.course.onlinecoursemanagement.repository.UserRepository;
 import com.course.onlinecoursemanagement.request.LoginRequest;
 import com.course.onlinecoursemanagement.request.SignupRequest;
-import com.course.onlinecoursemanagement.request.UpdateRequest;
+import com.course.onlinecoursemanagement.request.UpdateUserRequest;
 import com.course.onlinecoursemanagement.response.UserResponseDTO;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.course.onlinecoursemanagement.config.Utilities.hasValue;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -29,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final RoleRepository roleRepository;
 
-    public UserResponseDTO getRegisterUser(SignupRequest signupRequest) {
+    public UserResponseDTO createUser(SignupRequest signupRequest) {
         Set<String> strRoles = signupRequest.getRoles();
         Set<Role> roles = new HashSet<>();
         User userInfo = new User();
@@ -85,23 +88,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO getUpdateDetails(UpdateRequest updateRequest, Long id) {
+    @Transactional
+    public UserResponseDTO updateUserDetailsById(UpdateUserRequest updateUserRequest, Long id) {
         User userInfo = userRepository.findById(id).orElseThrow(() -> new ApiException("Please enter valid id!"));
 
-        if (hasValue(updateRequest.getEmail()) && !updateRequest.getEmail().equals(userInfo.getEmail())) {
-            userInfo.setEmail(updateRequest.getEmail());
+        if (hasValue(updateUserRequest.getEmail()) && !updateUserRequest.getEmail().equals(userInfo.getEmail())) {
+            userInfo.setEmail(updateUserRequest.getEmail());
         }
 
-        if (hasValue(updateRequest.getName()) && !updateRequest.getName().equals(userInfo.getName())) {
-            userInfo.setName(updateRequest.getName());
+        if (hasValue(updateUserRequest.getName()) && !updateUserRequest.getName().equals(userInfo.getName())) {
+            userInfo.setName(updateUserRequest.getName());
         }
 
-        if (hasValue(updateRequest.getUsername()) && !updateRequest.getUsername().equals(userInfo.getUsername())) {
-            userInfo.setUsername(updateRequest.getUsername());
+        if (hasValue(updateUserRequest.getUsername()) && !updateUserRequest.getUsername().equals(userInfo.getUsername())) {
+            userInfo.setUsername(updateUserRequest.getUsername());
         }
 
-        if (updateRequest.getRoles() != null && !updateRequest.getRoles().isEmpty()) {
-            Set<Role> updatedRoles = updateRequest.getRoles().stream().
+        if (updateUserRequest.getRoles() != null && !updateUserRequest.getRoles().isEmpty()) {
+            Set<Role> updatedRoles = updateUserRequest.getRoles().stream().
                     map(val -> roleRepository.findByRoleType(RoleType.valueOf(val.toUpperCase())).orElseThrow(
                             () -> new RuntimeException("Role not found: " + val)
                     )).collect(Collectors.toSet());
@@ -118,16 +122,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO getDeleteDetails(Long id) {
+    public UserResponseDTO deleteUserById(Long id) {
         User userInfo = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id is not valid: " + id));
         userRepository.delete(userInfo);
         return modelMapper.map(userInfo, UserResponseDTO.class);
     }
-
-
-    private boolean hasValue(String str) {
-        return str != null && !str.isBlank();
-    }
-
-
 }
