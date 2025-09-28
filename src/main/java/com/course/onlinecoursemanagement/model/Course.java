@@ -32,6 +32,9 @@ public class Course {
     @Positive(message = "Price must be greater than 0")
     private Double price;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "student_courses", joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

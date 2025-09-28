@@ -2,6 +2,7 @@ package com.course.onlinecoursemanagement.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Payment {
     private Long paymentId;
 
     @NotNull
+    @Positive(message = "Amount should be greater than 0")
     private Double amount;
 
     @CreationTimestamp

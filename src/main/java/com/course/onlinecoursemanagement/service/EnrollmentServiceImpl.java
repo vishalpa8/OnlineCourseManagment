@@ -8,14 +8,14 @@ import com.course.onlinecoursemanagement.repository.EnrollmentRepository;
 import com.course.onlinecoursemanagement.repository.UserRepository;
 import com.course.onlinecoursemanagement.request.EnrollmentRequest;
 import com.course.onlinecoursemanagement.response.EnrollmentDTO;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
+import static com.course.onlinecoursemanagement.config.Utilities.formatDate;
 import static com.course.onlinecoursemanagement.config.Utilities.hasValue;
 
 @Service
@@ -28,6 +28,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
 
     @Override
+    @Transactional
     public EnrollmentDTO letUserEnrolled(EnrollmentRequest enrollmentRequest) {
         User userInfo = enrollmentRequest.getStudent();
         Course courseInfo = enrollmentRequest.getCourse();
@@ -103,9 +104,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
         enrollmentDTO.setStudentName(enrollment.getStudent().getName());
         enrollmentDTO.setStudentEmail(enrollment.getStudent().getEmail());
-        String formattedTime = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a", Locale.ENGLISH)
-                .format(enrollment.getEnrolledAt());
-        enrollmentDTO.setEnrolledAt(formattedTime);
+        enrollmentDTO.setEnrolledAt(formatDate(enrollment.getEnrolledAt()));
         return enrollmentDTO;
     }
 

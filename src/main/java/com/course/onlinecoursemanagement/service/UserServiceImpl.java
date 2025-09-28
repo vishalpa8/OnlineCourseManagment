@@ -58,6 +58,11 @@ public class UserServiceImpl implements UserService {
                                         .orElseThrow(() -> new ResourceNotFoundException("Error: Instructor Role not found"));
                                 roles.add(instruct_role);
                                 break;
+                            case "student":
+                                Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
+                                        .orElseThrow(() -> new ResourceNotFoundException("Error: User Role not found"));
+                                roles.add(user_role);
+                                break;
                             default:
                                 throw new ResourceNotFoundException(role, "roleType", "roles");
                         }
