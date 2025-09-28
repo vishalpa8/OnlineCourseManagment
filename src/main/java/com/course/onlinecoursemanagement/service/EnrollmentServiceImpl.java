@@ -1,6 +1,7 @@
 package com.course.onlinecoursemanagement.service;
 
 import com.course.onlinecoursemanagement.exception.ApiException;
+import com.course.onlinecoursemanagement.exception.ResourceNotFoundException;
 import com.course.onlinecoursemanagement.model.*;
 import com.course.onlinecoursemanagement.repository.CourseRepository;
 import com.course.onlinecoursemanagement.repository.EnrollmentRepository;
@@ -10,6 +11,12 @@ import com.course.onlinecoursemanagement.response.EnrollmentDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
+
+import static com.course.onlinecoursemanagement.config.Utilities.hasValue;
 
 @Service
 @AllArgsConstructor
@@ -61,18 +68,45 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollment.setStudent(userFromDB);
         enrollmentRepository.save(enrollment);
 
+        return getEnrollmentDTO(enrollment);
+    }
 
+    @Override
+    public EnrollmentDTO getEnrollmentUserById(Long id) {
+        Enrollment enrollment = enrollmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Given enrollmentId is not valid!!"));
+        return getEnrollmentDTO(enrollment);
+    }
+
+    @Override
+    public List<EnrollmentDTO> getAllEnrollments() {
+        List<Enrollment> enrollment = enrollmentRepository.findAll();
+        return enrollment.stream().map(EnrollmentServiceImpl::getEnrollmentDTO).toList();
+    }
+
+    public static EnrollmentDTO getEnrollmentDTO(Enrollment enrollment) {
         EnrollmentDTO enrollmentDTO = new EnrollmentDTO();
-        enrollmentDTO.setCourseId(courseFromDB.getCourse_id());
+        enrollmentDTO.setCourseId(enrollment.getCourse().getCourse_id());
         enrollmentDTO.setEnrollmentId(enrollment.getEnrollmentId());
-        enrollmentDTO.setStudentId(userFromDB.getUserId());
-        enrollmentDTO.setInstructorName(courseFromDB.getInstructor().getName());
-        enrollmentDTO.setPayment(String.valueOf(Status.PENDING));
-        enrollmentDTO.setEnrollmentStatus(String.valueOf(Status.PENDING));
-        enrollmentDTO.setStudentName(userFromDB.getName());
-        enrollmentDTO.setStudentEmail(userFromDB.getEmail());
-        enrollmentDTO.setEnrolledAt(enrollment.getEnrolledAt());
+        enrollmentDTO.setStudentId(enrollment.getStudent().getUserId());
+        enrollmentDTO.setInstructorName(enrollment.getCourse().getInstructor().getName());
 
+        if (!hasValue(String.valueOf(enrollment.getPayment().getPaymentStatus()))) {
+            enrollmentDTO.setPayment(String.valueOf(Status.PENDING));
+        } else {
+            enrollmentDTO.setPayment(String.valueOf(enrollment.getPayment().getPaymentStatus()));
+        }
+        if (!hasValue(String.valueOf(enrollment.getEnrollmentStatus()))) {
+            enrollmentDTO.setEnrollmentStatus(String.valueOf(Status.PENDING));
+        } else {
+            enrollmentDTO.setEnrollmentStatus(String.valueOf(enrollment.getEnrollmentStatus()));
+        }
+        enrollmentDTO.setStudentName(enrollment.getStudent().getName());
+        enrollmentDTO.setStudentEmail(enrollment.getStudent().getEmail());
+        String formattedTime = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a", Locale.ENGLISH)
+                .format(enrollment.getEnrolledAt());
+        enrollmentDTO.setEnrolledAt(formattedTime);
         return enrollmentDTO;
     }
+
 }
