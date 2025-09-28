@@ -1,9 +1,7 @@
 package com.course.onlinecoursemanagement.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,15 +20,21 @@ public class Payment {
     private Long paymentId;
 
     @NotNull
-    @Positive
     private Double amount;
 
     @CreationTimestamp
     @Column(updatable = false)
     private Date paymentDate;
 
-    @NotBlank
+    @NotNull(message = "status is required")
+    @Enumerated(EnumType.STRING)
     private Status paymentStatus;
+
+    public Payment(Status paymentStatus, Enrollment enrollment) {
+        this.paymentStatus = paymentStatus;
+        this.enrollment = enrollment;
+        amount = 0.0;
+    }
 
     @OneToOne()
     @JoinColumn(name = "enrollment_id")

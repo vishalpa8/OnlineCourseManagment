@@ -1,13 +1,14 @@
 package com.course.onlinecoursemanagement.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -22,10 +23,11 @@ public class Enrollment {
     @Column(updatable = false)
     private Date enrolledAt;
 
-    @NotBlank
+    @NotNull(message = "status is required")
+    @Enumerated(EnumType.STRING)
     private Status enrollmentStatus;
 
-    @OneToOne(mappedBy = "enrollment",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "enrollment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
     @ManyToOne()
@@ -36,4 +38,15 @@ public class Enrollment {
     @JoinColumn(name = "user_id")
     private User student;
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(enrollmentId); // ✅ Only ID
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Enrollment other)) return false;
+        return Objects.equals(this.enrollmentId, other.enrollmentId);
+    }
 }

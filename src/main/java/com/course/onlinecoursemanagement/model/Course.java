@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -31,7 +32,7 @@ public class Course {
     @Positive(message = "Price must be greater than 0")
     private Double price;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "student_courses", joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> students;
@@ -42,4 +43,16 @@ public class Course {
 
     @OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<Enrollment> enrollments = new HashSet<>();
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(course_id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Course other)) return false;
+        return Objects.equals(this.course_id, other.course_id);
+    }
 }

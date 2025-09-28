@@ -40,8 +40,8 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
-    @ManyToMany(mappedBy = "students", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Course> courses;
+    @ManyToMany
+    private Set<Course> courses;
 
     @OneToMany(mappedBy = "instructor", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Course> coursesTaught;
