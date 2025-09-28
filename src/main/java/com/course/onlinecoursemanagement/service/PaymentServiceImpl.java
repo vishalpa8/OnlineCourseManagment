@@ -37,6 +37,8 @@ public class PaymentServiceImpl implements PaymentService {
         if (value < 0) {
             double require_amount = enrollment.getCourse().getPrice() - paymentRequest.getAmount();
             throw new ApiException("you are not paying the right amount!, require more money " + require_amount);
+        } else if (value > 0) {
+            throw new ApiException("you are trying to pay more money then required money! " + enrollment.getCourse().getPrice());
         }
 
         payment.setAmount(paymentRequest.getAmount());
