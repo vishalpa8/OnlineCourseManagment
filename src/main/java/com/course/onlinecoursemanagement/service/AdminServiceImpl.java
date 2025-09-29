@@ -28,7 +28,7 @@ public class AdminServiceImpl implements AdminService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
-    public AdminServiceImpl(CourseRepository courseRepository, ModelMapper modelMapper, CourseService courseService, UserRepository userRepository) {
+    public AdminServiceImpl(CourseRepository courseRepository, ModelMapper modelMapper, UserRepository userRepository) {
         this.courseRepository = courseRepository;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
@@ -60,6 +60,7 @@ public class AdminServiceImpl implements AdminService {
             adminRevenue.setDescription(course.getDescription());
             adminRevenue.setInstructor(course.getInstructor().getName());
             adminRevenue.setPrice(course.getPrice());
+            adminRevenue.setTitle(course.getTitle());
             return adminRevenue;
         }).toList();
         adminRevenueDTO.setCoursesRevenue(courseRevenue);
