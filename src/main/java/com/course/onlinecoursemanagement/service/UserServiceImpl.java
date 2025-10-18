@@ -14,6 +14,7 @@ import com.course.onlinecoursemanagement.response.UserResponseDTO;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -31,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponseDTO createUser(SignupRequest signupRequest) {
         Set<String> strRoles = signupRequest.getRoles();
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService {
         userInfo.setEmail(signupRequest.getEmail());
         userInfo.setName(signupRequest.getName());
         userInfo.setUsername(signupRequest.getUsername());
+        userInfo.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
 
         if (strRoles == null) {
             Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
@@ -72,12 +75,15 @@ public class UserServiceImpl implements UserService {
 
         userInfo.setRoles(roles);
         userRepository.save(userInfo);
-        return modelMapper.map(userInfo, UserResponseDTO.class);
+
+        UserResponseDTO responseDTO = modelMapper.map(userInfo, UserResponseDTO.class);
+        responseDTO.setRoles(userInfo.getRoles());
+        return responseDTO;
     }
 
     @Override
     public Optional<User> getUserLogin(LoginRequest loginRequest) {
-        return userRepository.findByEmail(loginRequest.getEmail())
+        return userRepository.findByEmail(loginRequest.getUsername())
                 .or(() -> userRepository.findByUsername(loginRequest.getUsername()));
     }
 

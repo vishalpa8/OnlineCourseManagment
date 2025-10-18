@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class AppConfig {
     }
 
     @Bean
-    public CommandLineRunner initRoles(RoleRepository roleRepository, UserRepository userRepository) {
+    public CommandLineRunner initRoles(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             Role admin = roleRepository.findByRoleType(RoleType.ADMIN).orElseGet(() -> {
                 Role admin_role = new Role(RoleType.ADMIN);
@@ -46,17 +47,17 @@ public class AppConfig {
             Set<Role> adminRoles = Set.of(user, instructor, admin);
 
             if (!userRepository.existsByUsername("user1")) {
-                User user1 = new User("user1", "user1", "user1@gmail.com");
+                User user1 = new User("user1", "user1", "user1@gmail.com",passwordEncoder.encode("user@123"));
                 userRepository.save(user1);
             }
 
             if (!userRepository.existsByUsername("teacher1")) {
-                User teacher = new User("teacher1", "teacher1", "teacher12@gmail.com");
+                User teacher = new User("teacher1", "teacher1", "teacher12@gmail.com",passwordEncoder.encode("teacher@123"));
                 userRepository.save(teacher);
             }
 
             if (!userRepository.existsByUsername("admin")) {
-                User admin_1 = new User("admin", "admin", "admin12@gmail.com");
+                User admin_1 = new User("admin", "admin", "admin12@gmail.com",passwordEncoder.encode("admin@123"));
                 userRepository.save(admin_1);
             }
 

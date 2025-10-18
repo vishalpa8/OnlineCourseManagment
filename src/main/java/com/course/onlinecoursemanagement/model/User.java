@@ -31,6 +31,8 @@ public class User {
     @NotBlank(message = "Email id is required")
     private String email;
 
+    @NotBlank(message = "Password is required")
+    private String password;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
@@ -49,9 +51,10 @@ public class User {
     @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<Enrollment> enrollments;
 
-    public User(String name, String username, String email) {
+    public User(String name, String username, String email, String password) {
         this.name = name;
         this.username = username;
         this.email = email;
+        this.password = password;
     }
 }
