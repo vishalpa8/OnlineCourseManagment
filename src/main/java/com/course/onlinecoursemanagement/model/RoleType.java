@@ -1,7 +1,7 @@
 package com.course.onlinecoursemanagement.model;
 
 public enum RoleType {
-    STUDENT,
-    ADMIN,
-    INSTRUCTOR
+    ROLE_STUDENT,
+    ROLE_ADMIN,
+    ROLE_INSTRUCTOR
 }

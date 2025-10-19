@@ -12,6 +12,7 @@ import com.course.onlinecoursemanagement.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,12 +31,13 @@ public class CourseController {
     }
 
     @PostMapping("/courses/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
     public ResponseEntity<?> createCourses(@Valid @RequestBody Course course, @PathVariable Long id) {
         User instructor = userRepository.findById(id).orElseThrow
                 (() -> new ResourceNotFoundException("Please enter valid id"));
 
         boolean isInstructor = instructor.getRoles().stream().map(Role::getRoleType).
-                anyMatch(role -> Set.of(RoleType.ADMIN, RoleType.INSTRUCTOR).contains(role));
+                anyMatch(role -> Set.of(RoleType.ROLE_ADMIN, RoleType.ROLE_INSTRUCTOR).contains(role));
 
         if (!isInstructor) {
             throw new ApiException("You are not authorized to create course");
@@ -46,6 +48,7 @@ public class CourseController {
     }
 
     @GetMapping("/courses/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllCourses() {
         List<CourseResponseDTO> courseResponseDTO = courseService.getAllCourses();
         return new ResponseEntity<>(courseResponseDTO, HttpStatus.OK);
@@ -58,12 +61,14 @@ public class CourseController {
     }
 
     @DeleteMapping("/courses/delete/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
     public ResponseEntity<?> deleteCourseById(@PathVariable Long id) {
         CourseResponseDTO courseResponseDTO = courseService.deleteCourseById(id);
         return new ResponseEntity<>(courseResponseDTO, HttpStatus.OK);
     }
 
     @PutMapping("/courses/update/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
     public ResponseEntity<?> updateCourseDetails(@RequestBody CourseResponseDTO updateCourseRequest, @PathVariable Long id) {
         CourseResponseDTO courseResponseDTO = courseService.updateCourseDetails(updateCourseRequest, id);
         return new ResponseEntity<>(courseResponseDTO, HttpStatus.OK);

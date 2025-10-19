@@ -7,6 +7,7 @@ import com.course.onlinecoursemanagement.response.StudentCourseHistoryDTO;
 import com.course.onlinecoursemanagement.service.AdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +26,14 @@ public class AdminController {
     }
 
     @GetMapping("/reports/course/{courseId}/students")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR','USER')")
     public ResponseEntity<?> getAllStudentsEnrolledInCourse(@PathVariable Long courseId) {
         AdminResponseDTO adminResponseDTO = adminService.getAllStudentsEnrolledData(courseId);
         return new ResponseEntity<>(adminResponseDTO, HttpStatus.OK);
     }
 
     @GetMapping("/reports/course/revenue")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR','USER')")
     public ResponseEntity<?> getTotalRevenuePerCourse() {
         AdminRevenueDTO adminResponseDTO = adminService.getTotalRevenuePerCourseByUser();
         return new ResponseEntity<>(adminResponseDTO, HttpStatus.OK);
@@ -38,6 +41,7 @@ public class AdminController {
 
 
     @GetMapping("/reports/student/{studentId}/history")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR','USER')")
     public ResponseEntity<?> getStudentCourseHistory(@PathVariable Long studentId) {
         List<StudentCourseHistoryDTO> studentCourseHistoryDTO = adminService.getStudentCourseHistoryById(studentId);
         return new ResponseEntity<>(studentCourseHistoryDTO, HttpStatus.OK);

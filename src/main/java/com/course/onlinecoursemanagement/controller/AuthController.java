@@ -14,18 +14,17 @@ import com.course.onlinecoursemanagement.security.service.UserDetailsImpl;
 import com.course.onlinecoursemanagement.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -83,6 +82,7 @@ public class AuthController {
     }
 
     @GetMapping("/users/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR','USER')")
     public ResponseEntity<?> getUserId(@PathVariable Long id) {
         Optional<User> userInfo = userService.getUserById(id);
 
@@ -102,6 +102,7 @@ public class AuthController {
     }
 
     @GetMapping("/users/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR','USER')")
     public ResponseEntity<?> getAllUsers() {
         List<UserResponseDTO> userList = userService.getAllUsers();
         return new ResponseEntity<>(userList, HttpStatus.OK);
@@ -149,7 +150,7 @@ public class AuthController {
         }
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,
-                cookie.toString()).body(new ApiException("You've signed out!"));
+                cookie.toString()).body("You've signed out!");
     }
 
     @GetMapping("/health")

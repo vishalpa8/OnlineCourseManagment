@@ -25,19 +25,19 @@ public class AppConfig {
     @Bean
     public CommandLineRunner initRoles(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            Role admin = roleRepository.findByRoleType(RoleType.ADMIN).orElseGet(() -> {
-                Role admin_role = new Role(RoleType.ADMIN);
+            Role admin = roleRepository.findByRoleType(RoleType.ROLE_ADMIN).orElseGet(() -> {
+                Role admin_role = new Role(RoleType.ROLE_ADMIN);
                 roleRepository.save(admin_role);
                 return admin_role;
             });
-            Role user = roleRepository.findByRoleType(RoleType.STUDENT).orElseGet(() -> {
-                Role user_role = new Role(RoleType.STUDENT);
+            Role user = roleRepository.findByRoleType(RoleType.ROLE_STUDENT).orElseGet(() -> {
+                Role user_role = new Role(RoleType.ROLE_STUDENT);
                 roleRepository.save(user_role);
                 return user_role;
             });
 
-            Role instructor = roleRepository.findByRoleType(RoleType.INSTRUCTOR).orElseGet(() -> {
-                Role instructor_role = new Role(RoleType.INSTRUCTOR);
+            Role instructor = roleRepository.findByRoleType(RoleType.ROLE_INSTRUCTOR).orElseGet(() -> {
+                Role instructor_role = new Role(RoleType.ROLE_INSTRUCTOR);
                 roleRepository.save(instructor_role);
                 return instructor_role;
             });

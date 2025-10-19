@@ -45,24 +45,24 @@ public class UserServiceImpl implements UserService {
         userInfo.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
 
         if (strRoles == null) {
-            Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
+            Role user_role = roleRepository.findByRoleType(RoleType.ROLE_STUDENT)
                     .orElseThrow(() -> new ResourceNotFoundException("Error: User Role not found"));
             roles.add(user_role);
         } else {
             strRoles.forEach(role -> {
                         switch (role.toLowerCase()) {
                             case "admin":
-                                Role admin_role = roleRepository.findByRoleType(RoleType.ADMIN)
+                                Role admin_role = roleRepository.findByRoleType(RoleType.ROLE_ADMIN)
                                         .orElseThrow(() -> new ResourceNotFoundException("Error: Admin Role not found"));
                                 roles.add(admin_role);
                                 break;
                             case "instructor":
-                                Role instruct_role = roleRepository.findByRoleType(RoleType.INSTRUCTOR)
+                                Role instruct_role = roleRepository.findByRoleType(RoleType.ROLE_INSTRUCTOR)
                                         .orElseThrow(() -> new ResourceNotFoundException("Error: Instructor Role not found"));
                                 roles.add(instruct_role);
                                 break;
                             case "student":
-                                Role user_role = roleRepository.findByRoleType(RoleType.STUDENT)
+                                Role user_role = roleRepository.findByRoleType(RoleType.ROLE_STUDENT)
                                         .orElseThrow(() -> new ResourceNotFoundException("Error: User Role not found"));
                                 roles.add(user_role);
                                 break;

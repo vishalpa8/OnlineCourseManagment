@@ -6,6 +6,7 @@ import com.course.onlinecoursemanagement.response.EnrollmentDTO;
 import com.course.onlinecoursemanagement.service.EnrollmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class EnrollmentController {
     }
 
     @GetMapping("/users/enrollments/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
     public ResponseEntity<?> getAllEnrollment() {
         List<EnrollmentDTO> enrollmentDTO = enrollmentService.getAllEnrollments();
         return new ResponseEntity<>(enrollmentDTO, HttpStatus.OK);
